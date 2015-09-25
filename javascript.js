@@ -22,7 +22,7 @@ function main() {
 
         // summation for grade cells
         var avgGradeExpStr = cells[8].textContent.trim();
-        console.log(parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")"))));
+        //console.log(parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")"))));
         avgGradeExp += parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
         var avgGradeRecStr = cells[9].textContent.trim();
         avgGradeRec += parseFloat(avgGradeRecStr.substring(avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
@@ -46,14 +46,41 @@ function main() {
     avgGradeExp = avgGradeExp/100;
     console.log("avgGradeExp Total: " + avgGradeExp);
     avgGradeExp = avgGradeExp / (allRows.length);
-    console.log("avgGradeExp: " + avgGradeExp);
+    var avgLetterGradeExp = getLetterGrade(avgGradeExp);
+    console.log("avgGradeExp: " + avgLetterGradeExp + " (" + avgGradeExp + ")");
 
     avgGradeRec = avgGradeRec/100;
     console.log("avgGradeRec Total: " + avgGradeRec);
     avgGradeRec = avgGradeRec / (allRows.length);
-    console.log("avgGradeRec: " + avgGradeRec);
+    var avgLetterGradeRec = getLetterGrade(avgGradeRec);
+    console.log("avgGradeRec: " + avgLetterGradeRec + " (" + avgGradeRec + ")");
 }
 
+function getLetterGrade (x) {
+
+    if (x <= 1.0)
+        return "F";
+    else if ((1.0 < x) && (x <= 1.7))
+        return "D";
+    else if ((1.7 < x) && (x <= 2.0))
+        return "C-";
+    else if ((2.0 < x) && (x <= 2.3))
+        return "C";
+    else if ((2.3 < x) && (x <= 2.7))
+        return "C+";
+    else if ((2.7 < x) && (x <= 3.0))
+        return "B-";
+    else if ((3.0 < x) && (x <= 3.3))
+        return "B";
+    else if ((3.3 < x) && (x <= 3.7))
+        return "B+";
+    else if ((3.7 < x) && (x < 4.0))
+        return "A-";
+    else if ((4.0 < x) && (x <= 4.0))
+        return "A";
+    else
+        return;
+}
 // code to test the extension's performance
 /*
 var endTime = new Date().getTime();
