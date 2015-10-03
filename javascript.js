@@ -6,20 +6,45 @@ var studyHrs = 0.0;            // 8th cell, index 7
 var avgGradeExp = 0.0;         // 9th cell, index 8
 var avgGradeRec = 0.0;         // 10th cell, index 9
 
+var justAdded = false;
+var skippedRow = 0;
+var avgGradeExpRows = 0;
+var avgGradeRecRows = 0;
+
 var allRows = document.querySelectorAll("tbody tr");
-console.log(allRows.length);
 if (allRows.length != 0)
     main();
+/*
+$(document).bind("DOMSubtreeModified", function() {
+    if (!justAdded) {
+        allRows = document.querySelectorAll("tbody tr");
+        if (allRows.length != 0)
+            main();
+    }
+    else {
+        justAdded = false;
+    }
+});
+*/
 
 function main() {
-    getAvgs();
+    getAvgs(3);  // 1 to add all possible, 2 to set N/A to expected grade, 3 to ignore the row
     displayAvgs();
+    justAdded = true;
 }
 
-function getAvgs() {
+function getAvgs(method) {
     for ( var i = 0; i < allRows.length; i++) {
         var cells = allRows[i].querySelectorAll("td");
         
+        // skip this row if it was for a summer session
+        if ((cells[2].textContent.trim().charAt(0) == 'S') &&
+            !(cells[2].textContent.trim().substring(0,2) == "SP")) {
+            //console.log("Skipped row " + i + ": " + cells[2].textContent.trim());
+            skippedRow++;
+            continue;
+        }
+
         // summation for numeric cells
         rcmndClass += parseFloat(cells[5].textContent.replace(/%/g, '').trim())*10;
         rcmndInstr += parseFloat(cells[6].textContent.replace(/%/g, '').trim())*10;
@@ -27,38 +52,66 @@ function getAvgs() {
 
         // summation for grade cells
         var avgGradeExpStr = cells[8].textContent.trim();
-        //console.log(parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")"))));
-        avgGradeExp += parseFloat(avgGradeExpStr.substring(
-            avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
+        if (avgGradeExpStr.indexOf("(") != -1) {
+            avgGradeExp += parseFloat(avgGradeExpStr.substring(
+                avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
+            avgGradeExpRows++;
+        }
         var avgGradeRecStr = cells[9].textContent.trim();
-        avgGradeRec += parseFloat(avgGradeRecStr.substring(
-            avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
+        if (method == 1) {
+            if (avgGradeRecStr.indexOf("(") != -1) {
+                avgGradeRec += parseFloat(avgGradeRecStr.substring(
+                    avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
+                avgGradeRecRows++;
+            }
+        }
+        else if (method == 2) {
+            if (avgGradeRecStr.indexOf("(") == -1)
+                avgGradeRec += parseFloat(avgGradeExpStr.substring(
+                    avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
+            else
+                avgGradeRec += parseFloat(avgGradeRecStr.substring(
+                    avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
+            avgGradeRecRows++;
+        }
+        else if (method == 3) {
+            if (avgGradeRecStr.indexOf("(") == -1) {
+                avgGradeExp -= parseFloat(avgGradeExpStr.substring(
+                    avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
+                avgGradeExpRows--;
+            }
+            else {
+                avgGradeRec += parseFloat(avgGradeRecStr.substring(
+                    avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
+                avgGradeRecRows++;
+            }
+        }
     }
     // multiply and divid by 10 or 100 to avoid error when adding floats
     rcmndClass = rcmndClass/10;
     console.log("Total rcmdClass: " + rcmndClass);
-    rcmndClass = rcmndClass / (allRows.length);
+    rcmndClass = rcmndClass / (allRows.length - skippedRow);
     console.log("rcmdClass: " + rcmndClass);
 
     rcmndInstr = rcmndInstr/10;
     console.log("Total rcmndInstr: " + rcmndInstr);
-    rcmndInstr = rcmndInstr / (allRows.length);
+    rcmndInstr = rcmndInstr / (allRows.length - skippedRow);
     console.log("rcmndInstr: " + rcmndInstr);
 
     studyHrs = studyHrs/10;
     console.log("Total studyHrs: " + studyHrs);
-    studyHrs = studyHrs / (allRows.length);
+    studyHrs = studyHrs / (allRows.length - skippedRow);
     console.log("studyHrs: " + studyHrs);
 
     avgGradeExp = avgGradeExp/100;
     console.log("Total avgGradeExp: " + avgGradeExp);
-    avgGradeExp = avgGradeExp / (allRows.length);
+    avgGradeExp = avgGradeExp / (avgGradeExpRows);
     var avgLetterGradeExp = getLetterGrade(avgGradeExp);
     console.log("avgGradeExp: " + avgLetterGradeExp + " (" + avgGradeExp + ")");
 
     avgGradeRec = avgGradeRec/100;
     console.log("Total avgGradeRec: " + avgGradeRec);
-    avgGradeRec = avgGradeRec / (allRows.length);
+    avgGradeRec = avgGradeRec / (avgGradeRecRows);
     var avgLetterGradeRec = getLetterGrade(avgGradeRec);
     console.log("avgGradeRec: " + avgLetterGradeRec + " (" + avgGradeRec + ")");
 
