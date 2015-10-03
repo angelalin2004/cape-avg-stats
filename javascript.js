@@ -1,17 +1,22 @@
 //var startTime = new Date().getTime();
 
+var rcmndClass = 0.0;            // 6th cell, index 5
+var rcmndInstr = 0.0;            // 7th cell, index 6
+var studyHrs = 0.0;            // 8th cell, index 7
+var avgGradeExp = 0.0;         // 9th cell, index 8
+var avgGradeRec = 0.0;         // 10th cell, index 9
+
 var allRows = document.querySelectorAll("tbody tr");
 console.log(allRows.length);
 if (allRows.length != 0)
     main();
 
 function main() {
-    var rcmndClass = 0.0;	         // 6th cell, index 5
-    var rcmndInstr = 0.0;	         // 7th cell, index 6
-    var studyHrs = 0.0;            // 8th cell, index 7
-    var avgGradeExp = 0.0;         // 9th cell, index 8
-    var avgGradeRec = 0.0;         // 10th cell, index 9
+    getAvgs();
+    displayAvgs();
+}
 
+function getAvgs() {
     for ( var i = 0; i < allRows.length; i++) {
         var cells = allRows[i].querySelectorAll("td");
         
@@ -23,41 +28,44 @@ function main() {
         // summation for grade cells
         var avgGradeExpStr = cells[8].textContent.trim();
         //console.log(parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")"))));
-        avgGradeExp += parseFloat(avgGradeExpStr.substring(avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
+        avgGradeExp += parseFloat(avgGradeExpStr.substring(
+            avgGradeExpStr.indexOf("(")+1,avgGradeExpStr.indexOf(")")))*100;
         var avgGradeRecStr = cells[9].textContent.trim();
-        avgGradeRec += parseFloat(avgGradeRecStr.substring(avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
+        avgGradeRec += parseFloat(avgGradeRecStr.substring(
+            avgGradeRecStr.indexOf("(")+1,avgGradeRecStr.indexOf(")")))*100;
     }
     // multiply and divid by 10 or 100 to avoid error when adding floats
     rcmndClass = rcmndClass/10;
-    console.log("rcmdClass Total: " + rcmndClass);
+    console.log("Total rcmdClass: " + rcmndClass);
     rcmndClass = rcmndClass / (allRows.length);
     console.log("rcmdClass: " + rcmndClass);
 
     rcmndInstr = rcmndInstr/10;
-    console.log("rcmndInstr Total: " + rcmndInstr);
+    console.log("Total rcmndInstr: " + rcmndInstr);
     rcmndInstr = rcmndInstr / (allRows.length);
     console.log("rcmndInstr: " + rcmndInstr);
 
     studyHrs = studyHrs/10;
-    console.log("studyHrs Total: " + studyHrs);
+    console.log("Total studyHrs: " + studyHrs);
     studyHrs = studyHrs / (allRows.length);
     console.log("studyHrs: " + studyHrs);
 
     avgGradeExp = avgGradeExp/100;
-    console.log("avgGradeExp Total: " + avgGradeExp);
+    console.log("Total avgGradeExp: " + avgGradeExp);
     avgGradeExp = avgGradeExp / (allRows.length);
     var avgLetterGradeExp = getLetterGrade(avgGradeExp);
     console.log("avgGradeExp: " + avgLetterGradeExp + " (" + avgGradeExp + ")");
 
     avgGradeRec = avgGradeRec/100;
-    console.log("avgGradeRec Total: " + avgGradeRec);
+    console.log("Total avgGradeRec: " + avgGradeRec);
     avgGradeRec = avgGradeRec / (allRows.length);
     var avgLetterGradeRec = getLetterGrade(avgGradeRec);
     console.log("avgGradeRec: " + avgLetterGradeRec + " (" + avgGradeRec + ")");
 }
 
 function getLetterGrade (x) {
-
+    // numbers from:
+    // http://blink.ucsd.edu/instructors/academic-info/grades/system.html
     if (x <= 1.0)
         return "F";
     else if ((1.0 < x) && (x <= 1.7))
@@ -81,8 +89,22 @@ function getLetterGrade (x) {
     else
         return;
 }
+
+function displayAvgs() {
+    var avgRow = document.createElement("tr");
+    avgRow.id = "avgRow";
+    if (document.querySelectorAll("tbody").item(0).childElementCount % 2 != 0)   // odd rows
+        avgRow.className = "even";
+    else                                    // even rows
+        avgRow.className = "odd";
+    var newTbody = document.createElement("tbody");
+    document.querySelectorAll("table").item(0).appendChild(newTbody);
+    newTbody.appendChild(avgRow);
+
+}
+
 // code to test the extension's performance
 /*
 var endTime = new Date().getTime();
-console.log("Tumblr Posts Fix finished in " + (endTime-startTime) + "ms");
+console.log("Cape Avg Stats finished in " + (endTime-startTime) + "ms");
 */
