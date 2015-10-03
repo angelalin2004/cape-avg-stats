@@ -61,6 +61,20 @@ function getAvgs() {
     avgGradeRec = avgGradeRec / (allRows.length);
     var avgLetterGradeRec = getLetterGrade(avgGradeRec);
     console.log("avgGradeRec: " + avgLetterGradeRec + " (" + avgGradeRec + ")");
+
+    /* rounding and stylistic additions */
+    // round to 1 decimal place and add % sign
+    rcmndClass = Math.round(rcmndClass * 10) / 10;
+    rcmndClass = rcmndClass + " %";
+    rcmndInstr = Math.round(rcmndInstr * 10) / 10;
+    rcmndInstr = rcmndInstr + " %";
+    // round to 2 decimal places
+    studyHrs = Math.round(studyHrs * 100) / 100;
+    // round to 2 decimal places and add letter grade
+    avgGradeExp = Math.round(avgGradeExp * 100) / 100;
+    avgGradeExp = avgLetterGradeExp + " (" + avgGradeExp + ")";
+    avgGradeRec = Math.round(avgGradeRec * 100) / 100;
+    avgGradeRec = avgLetterGradeRec + " (" + avgGradeRec + ")";
 }
 
 function getLetterGrade (x) {
@@ -92,15 +106,19 @@ function getLetterGrade (x) {
 
 function displayAvgs() {
     var avgRow = document.createElement("tr");
-    avgRow.id = "avgRow";
-    if (document.querySelectorAll("tbody").item(0).childElementCount % 2 != 0)   // odd rows
+    var tbody = document.querySelectorAll("tbody").item(0);
+    if (tbody.childElementCount % 2 != 0)   // odd rows
         avgRow.className = "even";
     else                                    // even rows
         avgRow.className = "odd";
-    var newTbody = document.createElement("tbody");
-    document.querySelectorAll("table").item(0).appendChild(newTbody);
-    newTbody.appendChild(avgRow);
-
+    avgRow.id = "avgRow";
+    tbody.appendChild(avgRow);
+    avgRow.innerHTML = "<tr class='odd'><td>Column<br>Average</td><td></td>" + 
+        "<td></td><td align='right'></td><td align='right'></td>" +
+        "<td align='right'>" + rcmndClass + "</td><td align='right'>" + 
+        rcmndInstr + "</td><td align='right'>" + studyHrs + 
+        "</td><td align='right'>" + avgGradeExp + "</td><td align='right'>" + 
+        avgGradeRec + "</td></tr>";
 }
 
 // code to test the extension's performance

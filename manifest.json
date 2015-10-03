@@ -9,7 +9,7 @@
   [
     {
       "matches": ["http://www.cape.ucsd.edu/responses/*"],
-      "js": ["javascript.js"],
+      "js": ["jquery/jquery-1.11.3.js","javascript.js"],
       "css": ["css.css"]
     }
   ]
